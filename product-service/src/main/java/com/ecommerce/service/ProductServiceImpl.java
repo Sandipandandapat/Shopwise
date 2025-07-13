@@ -1,5 +1,7 @@
 package com.ecommerce.service;
 
+import com.ecommerce.controller.InventoryServiceClient;
+import com.ecommerce.dto.InventoryRequestDto;
 import com.ecommerce.dto.ProductRequestDto;
 import com.ecommerce.dto.ProductResponseDto;
 import com.ecommerce.mapper.ProductMapper;
@@ -16,23 +18,32 @@ public class ProductServiceImpl implements ProductService{
 
     private final ProductRepository productRepository;
     private final ProductMapper mapper;
+    private final InventoryServiceClient inventoryServiceClient;
 
     @Autowired
-    public ProductServiceImpl(ProductRepository productRepository, ProductMapper mapper){
+    public ProductServiceImpl(ProductRepository productRepository, ProductMapper mapper, InventoryServiceClient inventoryServiceClient){
         this.productRepository=productRepository;
         this.mapper=mapper;
+        this.inventoryServiceClient=inventoryServiceClient;
     }
 
     @Override
     public List<ProductResponseDto> addProduct(List<ProductRequestDto> requestDto) {
-        List<Products> request = requestDto.stream()
+        List<Products> products = requestDto.stream()
                 .map(mapper :: toProductEntity)
                 .collect(Collectors.toList());
-        productRepository.saveAll(request);
-        List<ProductResponseDto> response = request.stream()
+        productRepository.saveAll(products);
+        List<InventoryRequestDto> inventoryRequest = products.stream()
+                .map(product-> InventoryRequestDto.builder()
+                        .productId(product.getId())
+                        .quantity(0)
+                        .build())
+                        .toList();
+        inventoryServiceClient.addStock(inventoryRequest);
+        return products.stream()
                 .map(mapper :: toProductResponseDto)
                 .collect(Collectors.toList());
-        return response;
+
     }
 
     @Override

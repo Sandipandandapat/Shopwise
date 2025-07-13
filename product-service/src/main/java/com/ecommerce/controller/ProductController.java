@@ -33,6 +33,12 @@ public class ProductController {
         return ResponseEntity.ok(productService.getProductByCategory(category));
     }
 
+    @GetMapping("/{productId}/exists")
+    public ResponseEntity<Void> checkProductExists(@PathVariable String productId){
+        productService.getProductById(productId);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("add")
     public ResponseEntity<List<ProductResponseDto>> addProduct(@RequestBody List<ProductRequestDto> request){
         return ResponseEntity.ok(productService.addProduct(request));
