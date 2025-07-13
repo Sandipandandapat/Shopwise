@@ -19,7 +19,7 @@ public class InventoryController {
     }
 
     @PostMapping("add")
-    public ResponseEntity<Void> addStock(@RequestBody InventoryRequestDto request){
+    public ResponseEntity<Void> addStock(@RequestBody List<InventoryRequestDto> request){
         inventoryService.addStock(request);
         return ResponseEntity.ok().build();
     }

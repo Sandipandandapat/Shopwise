@@ -28,19 +28,25 @@ public class InventoryServiceImpl implements InventoryService{
     }
 
     @Override
-    public void addStock(InventoryRequestDto request) {
-        String productId = request.getProductId();
-        try {
-            productServiceClient.getProductById(productId);
-        }catch (FeignException e){
-            throw new RuntimeException("Product does not exist");
-        }
+    public void addStock(List<InventoryRequestDto> requestList) {
+        requestList.forEach(request-> {
+            String productId = request.getProductId();
+            int quantity = request.getQuantity();
+            try {
+                productServiceClient.checkProductExists(productId);
+            }catch (FeignException e){
+                throw new RuntimeException("Product does not exist");
+            }
 
-        Inventory inventory = inventoryRepo.findByProductId(productId)
-                .orElse(new Inventory(null,productId,0));
+            Inventory inventory = inventoryRepo.findByProductId(productId)
+                    .orElse(Inventory.builder()
+                            .productId(productId)
+                            .quantity(0)
+                            .build());
 
-        inventory.setQuantity(inventory.getQuantity() + request.getQuantity());
-        inventoryRepo.save(inventory);
+            inventory.setQuantity(inventory.getQuantity() + request.getQuantity());
+            inventoryRepo.save(inventory);
+        });
     }
 
     @Override
