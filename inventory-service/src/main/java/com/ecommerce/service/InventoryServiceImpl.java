@@ -7,10 +7,12 @@ import com.ecommerce.model.Inventory;
 import com.ecommerce.mapper.InventoryMapper;
 import com.ecommerce.repository.InventoryRepository;
 import feign.FeignException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class InventoryServiceImpl implements InventoryService{
@@ -54,6 +56,21 @@ public class InventoryServiceImpl implements InventoryService{
         return inventoryRepo.findByProductId(productId)
                 .map(mapper::toInventoryResponseDto)
                 .orElseThrow(()->new RuntimeException("productId not found"));
+    }
+
+    @Override
+    public boolean isStockAvailable(String productId, int quantity) {
+        return inventoryRepo.findByProductId(productId)
+                .map(inventory -> inventory.getQuantity() >= quantity)
+                .orElse(false);
+    }
+
+    @Transactional
+    @Override
+    public void decreaseStock(String productId, int quantity) {
+        Inventory inventory = inventoryRepo.findByProductId(productId).get();
+        inventory.setQuantity(inventory.getQuantity()-quantity);
+        inventoryRepo.save(inventory);
     }
 
 }

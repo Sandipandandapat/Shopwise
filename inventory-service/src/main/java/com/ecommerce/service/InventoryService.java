@@ -9,4 +9,8 @@ public interface InventoryService {
     void addStock(List<InventoryRequestDto> request);
 
     InventoryResponseDto getStockDetails(String productId);
+
+    boolean isStockAvailable(String productId, int quantity);
+
+    void decreaseStock(String productId, int quantity);
 }

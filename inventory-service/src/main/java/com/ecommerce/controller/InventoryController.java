@@ -30,4 +30,9 @@ public class InventoryController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("check")
+    public ResponseEntity<Boolean> checkStockAvailability(@RequestParam String productId, @RequestParam int quantity){
+        return ResponseEntity.ok(inventoryService.isStockAvailable(productId,quantity));
+    }
+
 }
