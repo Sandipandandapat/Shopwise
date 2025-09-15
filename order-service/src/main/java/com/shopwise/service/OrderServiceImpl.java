@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class OrderServiceImpl implements OrderService{
@@ -57,16 +58,20 @@ public class OrderServiceImpl implements OrderService{
         orderItems.forEach(item->item.setOrder(order));
         Order savedOrder = orderRepository.save(order);
 
-        orderEventProducer.sendOrderEvent(
-                new OrderEvent(
-                        savedOrder.getOrderId(),
-                        savedOrder.getUserId(),
-                        savedOrder.getOrderItems().stream()
-                                .map(item -> new OrderItemEvent(item.getProductId(),item.getQuantity()))
-                                .toList(),
-                        savedOrder.getTotalAmount()
-                )
-        );
+        String correlationId = UUID.randomUUID().toString();
+        OrderEvent event = OrderEvent.builder()
+                .orderId(savedOrder.getOrderId())
+                .userId(savedOrder.getUserId())
+                .items(savedOrder.getOrderItems().stream()
+                        .map(item -> new OrderItemEvent(item.getProductId(), item.getQuantity()))
+                        .toList())
+                .totalAmount(savedOrder.getTotalAmount())
+                .eventType("ORDER_CREATED")
+                .createdAt(savedOrder.getCreatedAt())
+                .correlationId(correlationId)
+                .build();
+        orderEventProducer.sendOrderEvent(event);
+
         return mapper.toOrderResponseDto(savedOrder);
     }
 
