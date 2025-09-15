@@ -17,5 +17,9 @@ public class Inventory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String productId;
-    private int quantity;
+    private int onHand;
+    private int reserved;
+
+    @Version
+    private Long version; //optimistic locking safety
 }

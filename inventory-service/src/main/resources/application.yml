@@ -17,7 +17,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-server: localhost:9092
     consumer:
       group-id: inventory-group
       auto-offset-reset: earliest
@@ -32,4 +32,16 @@ spring:
           json:
             value:
               default:
-                type: com.ecommerce.event.OrderEvent
+                type: com.ecommerce.events.OrderEvent
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+order:
+  topic:
+    name: order-events
+
+topic:
+    inventory-reserved: inventory-reserved
+    inventory-rejected: inventory-rejected

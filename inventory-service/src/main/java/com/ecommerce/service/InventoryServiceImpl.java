@@ -43,10 +43,10 @@ public class InventoryServiceImpl implements InventoryService{
             Inventory inventory = inventoryRepo.findByProductId(productId)
                     .orElse(Inventory.builder()
                             .productId(productId)
-                            .quantity(0)
+                            .onHand(0)
                             .build());
 
-            inventory.setQuantity(inventory.getQuantity() + request.getQuantity());
+            inventory.setOnHand(inventory.getOnHand() + request.getQuantity());
             inventoryRepo.save(inventory);
         });
     }
@@ -61,7 +61,7 @@ public class InventoryServiceImpl implements InventoryService{
     @Override
     public boolean isStockAvailable(String productId, int quantity) {
         return inventoryRepo.findByProductId(productId)
-                .map(inventory -> inventory.getQuantity() >= quantity)
+                .map(inventory -> inventory.getOnHand() >= quantity)
                 .orElse(false);
     }
 
@@ -69,7 +69,7 @@ public class InventoryServiceImpl implements InventoryService{
     @Override
     public void decreaseStock(String productId, int quantity) {
         Inventory inventory = inventoryRepo.findByProductId(productId).get();
-        inventory.setQuantity(inventory.getQuantity()-quantity);
+        inventory.setOnHand(inventory.getOnHand()-quantity);
         inventoryRepo.save(inventory);
     }
 

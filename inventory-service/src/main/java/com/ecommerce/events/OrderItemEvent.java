@@ -1,14 +1,15 @@
-package com.ecommerce.dto;
+package com.ecommerce.events;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class InventoryResponseDto {
+@Builder
+public class OrderItemEvent {
     private String productId;
-    private int onHand;
-    private boolean inStock;
+    private int quantity;
 }
