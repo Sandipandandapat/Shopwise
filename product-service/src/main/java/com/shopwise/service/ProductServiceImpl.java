@@ -1,12 +1,12 @@
-package com.ecommerce.service;
+package com.shopwise.service;
 
-import com.ecommerce.controller.InventoryServiceClient;
-import com.ecommerce.dto.InventoryRequestDto;
-import com.ecommerce.dto.ProductRequestDto;
-import com.ecommerce.dto.ProductResponseDto;
-import com.ecommerce.mapper.ProductMapper;
-import com.ecommerce.model.Products;
-import com.ecommerce.repository.ProductRepository;
+import com.shopwise.controller.InventoryServiceClient;
+import com.shopwise.dto.InventoryRequestDto;
+import com.shopwise.dto.ProductRequestDto;
+import com.shopwise.dto.ProductResponseDto;
+import com.shopwise.mapper.ProductMapper;
+import com.shopwise.model.Products;
+import com.shopwise.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

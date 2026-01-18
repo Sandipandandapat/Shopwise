@@ -1,6 +1,6 @@
-package com.ecommerce.repository;
+package com.shopwise.repository;
 
-import com.ecommerce.model.Products;
+import com.shopwise.model.Products;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

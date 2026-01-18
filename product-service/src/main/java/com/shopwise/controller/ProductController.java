@@ -1,8 +1,8 @@
-package com.ecommerce.controller;
+package com.shopwise.controller;
 
-import com.ecommerce.dto.ProductRequestDto;
-import com.ecommerce.dto.ProductResponseDto;
-import com.ecommerce.service.ProductService;
+import com.shopwise.dto.ProductRequestDto;
+import com.shopwise.dto.ProductResponseDto;
+import com.shopwise.service.ProductService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

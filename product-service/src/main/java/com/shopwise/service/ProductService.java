@@ -1,8 +1,7 @@
-package com.ecommerce.service;
+package com.shopwise.service;
 
-import com.ecommerce.dto.ProductRequestDto;
-import com.ecommerce.dto.ProductResponseDto;
-import org.springframework.stereotype.Service;
+import com.shopwise.dto.ProductRequestDto;
+import com.shopwise.dto.ProductResponseDto;
 
 import java.util.List;
 

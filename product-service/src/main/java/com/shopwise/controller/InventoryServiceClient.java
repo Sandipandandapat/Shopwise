@@ -1,6 +1,6 @@
-package com.ecommerce.controller;
+package com.shopwise.controller;
 
-import com.ecommerce.dto.InventoryRequestDto;
+import com.shopwise.dto.InventoryRequestDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
