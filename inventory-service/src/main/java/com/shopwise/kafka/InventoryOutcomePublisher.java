@@ -1,7 +1,7 @@
-package com.ecommerce.kafka;
+package com.shopwise.kafka;
 
-import com.ecommerce.events.InventoryRejectedEvent;
-import com.ecommerce.events.InventoryReservedEvent;
+import com.shopwise.events.InventoryRejectedEvent;
+import com.shopwise.events.InventoryReservedEvent;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

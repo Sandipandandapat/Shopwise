@@ -1,18 +1,17 @@
-package com.ecommerce.service;
+package com.shopwise.service;
 
-import com.ecommerce.controller.ProductServiceClient;
-import com.ecommerce.dto.InventoryRequestDto;
-import com.ecommerce.dto.InventoryResponseDto;
-import com.ecommerce.model.Inventory;
-import com.ecommerce.mapper.InventoryMapper;
-import com.ecommerce.repository.InventoryRepository;
+import com.shopwise.controller.ProductServiceClient;
+import com.shopwise.dto.InventoryRequestDto;
+import com.shopwise.dto.InventoryResponseDto;
+import com.shopwise.model.Inventory;
+import com.shopwise.mapper.InventoryMapper;
+import com.shopwise.repository.InventoryRepository;
 import feign.FeignException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class InventoryServiceImpl implements InventoryService{

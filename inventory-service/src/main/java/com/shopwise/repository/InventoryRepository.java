@@ -1,6 +1,6 @@
-package com.ecommerce.repository;
+package com.shopwise.repository;
 
-import com.ecommerce.model.Inventory;
+import com.shopwise.model.Inventory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

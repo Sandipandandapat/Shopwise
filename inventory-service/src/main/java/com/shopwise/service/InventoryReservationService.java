@@ -1,12 +1,12 @@
-package com.ecommerce.service;
+package com.shopwise.service;
 
-import com.ecommerce.events.OrderEvent;
-import com.ecommerce.events.OrderItemEvent;
-import com.ecommerce.kafka.InventoryOutcomePublisher;
-import com.ecommerce.model.Inventory;
-import com.ecommerce.model.InventoryReservation;
-import com.ecommerce.repository.InventoryRepository;
-import com.ecommerce.repository.InventoryReservationRepository;
+import com.shopwise.events.OrderEvent;
+import com.shopwise.events.OrderItemEvent;
+import com.shopwise.kafka.InventoryOutcomePublisher;
+import com.shopwise.model.Inventory;
+import com.shopwise.model.InventoryReservation;
+import com.shopwise.repository.InventoryRepository;
+import com.shopwise.repository.InventoryReservationRepository;
 import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

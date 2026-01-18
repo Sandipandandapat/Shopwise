@@ -1,8 +1,8 @@
-package com.ecommerce.mapper;
+package com.shopwise.mapper;
 
-import com.ecommerce.dto.InventoryRequestDto;
-import com.ecommerce.dto.InventoryResponseDto;
-import com.ecommerce.model.Inventory;
+import com.shopwise.dto.InventoryRequestDto;
+import com.shopwise.dto.InventoryResponseDto;
+import com.shopwise.model.Inventory;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

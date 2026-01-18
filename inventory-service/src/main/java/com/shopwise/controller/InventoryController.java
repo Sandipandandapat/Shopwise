@@ -1,9 +1,8 @@
-package com.ecommerce.controller;
+package com.shopwise.controller;
 
-import com.ecommerce.dto.InventoryRequestDto;
-import com.ecommerce.dto.InventoryResponseDto;
-import com.ecommerce.model.Inventory;
-import com.ecommerce.service.InventoryService;
+import com.shopwise.dto.InventoryRequestDto;
+import com.shopwise.dto.InventoryResponseDto;
+import com.shopwise.service.InventoryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,7 +1,7 @@
-package com.ecommerce.service;
+package com.shopwise.service;
 
-import com.ecommerce.dto.InventoryRequestDto;
-import com.ecommerce.dto.InventoryResponseDto;
+import com.shopwise.dto.InventoryRequestDto;
+import com.shopwise.dto.InventoryResponseDto;
 
 import java.util.List;
 

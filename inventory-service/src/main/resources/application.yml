@@ -32,7 +32,7 @@ spring:
           json:
             value:
               default:
-                type: com.ecommerce.events.OrderEvent
+                type: com.shopwise.events.OrderEvent
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer

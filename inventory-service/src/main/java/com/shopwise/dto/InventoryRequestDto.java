@@ -1,4 +1,4 @@
-package com.ecommerce.dto;
+package com.shopwise.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
