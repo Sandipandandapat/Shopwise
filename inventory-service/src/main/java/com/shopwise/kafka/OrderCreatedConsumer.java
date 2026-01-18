@@ -1,7 +1,7 @@
-package com.ecommerce.kafka;
+package com.shopwise.kafka;
 
-import com.ecommerce.events.OrderEvent;
-import com.ecommerce.service.InventoryReservationService;
+import com.shopwise.events.OrderEvent;
+import com.shopwise.service.InventoryReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;

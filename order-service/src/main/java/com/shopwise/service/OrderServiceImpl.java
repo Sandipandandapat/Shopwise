@@ -14,6 +14,8 @@ import com.shopwise.event.OrderItemEvent;
 import com.shopwise.kafka.OrderEventProducer;
 import com.shopwise.mapper.OrderMapper;
 import com.shopwise.repository.OrderRepository;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -94,18 +96,30 @@ public class OrderServiceImpl implements OrderService{
                 .build();
     }
 
+    //used feign fallback factory
     private ProductResponseDto getProduct(String productId) {
-        try {
-            return productServiceClient.getProductByProductId(productId);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        ProductResponseDto product = productServiceClient.getProductByProductId(productId);
+        if(product.getPrice().compareTo(BigDecimal.ZERO)==0){
+            throw new RuntimeException("Product service is temporarily unavailable. Please try again later.");
         }
+        return product;
     }
+
+//    private ProductResponseDto getProductFallback(String productId, Exception ex){
+//        return ProductResponseDto.builder()
+//                .id(productId)
+//                .name("Temporarily unavailable!!")
+//                .price(BigDecimal.ZERO)
+//                .build();
+//    }
+
 
     private BigDecimal calculateItemTotal(int quantity, BigDecimal price) {
         return price.multiply(BigDecimal.valueOf(quantity));
     }
 
+//    @CircuitBreaker(name = "inventoryService", fallbackMethod = "checkInventoryFallback")
+//    @Retry(name = "inventoryService")
     private void checkInventoryAvailability(OrderItemReqDto itemReq) {
         try {
             if(!inventoryServiceClient.isStockAvailable(itemReq.getProductId(),itemReq.getQuantity())){
@@ -116,6 +130,12 @@ public class OrderServiceImpl implements OrderService{
         }
     }
 
+    private void checkInventoryFallback(OrderItemReqDto itemReq, Exception ex) {
+
+        System.out.println("Inventory service not available");
+
+    }
+
     private BigDecimal calculateTotalAmount(List<OrderItems> orderItems) {
         return orderItems.stream()
                 .map(OrderItems::getPrice)
@@ -123,6 +143,7 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
+    @CircuitBreaker(name = "orderService", fallbackMethod = "getOrdersByUserFallback")
     public List<OrderResponseDto> getOrdersByUser(long userId) {
         List<Order> order = Optional.of(orderRepository.findByUserId(userId))
                 .filter(list -> !list.isEmpty())
@@ -132,5 +153,9 @@ public class OrderServiceImpl implements OrderService{
                 .map(mapper :: toOrderResponseDto)
                 .toList();
 
+    }
+
+    private List<OrderResponseDto> getOrdersByUserFallback(long userId, Exception ex) {
+        return List.of();
     }
 }

@@ -1,4 +1,4 @@
-package com.ecommerce.events;
+package com.shopwise.events;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
