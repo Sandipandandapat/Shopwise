@@ -1,4 +1,4 @@
-package com.ecommerce.model;
+package com.shopwise.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
