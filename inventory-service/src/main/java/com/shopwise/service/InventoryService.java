@@ -12,5 +12,7 @@ public interface InventoryService {
 
     boolean isStockAvailable(String productId, int quantity);
 
-    void decreaseStock(String productId, int quantity);
+    void deductStockForOrder(Long orderId);
+
+    void releaseStockForOrder(Long orderId);
 }

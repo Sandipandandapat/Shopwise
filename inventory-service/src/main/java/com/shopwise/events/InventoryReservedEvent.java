@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -12,8 +13,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class InventoryReservedEvent {
-    private String eventType; // "INVENTORY_RESERVED"
+    private String eventType;
     private Long orderId;
+    private Long userId;
+    private BigDecimal totalAmount;
     private LocalDateTime occurredAt;
 //    private String correlationId;
 }

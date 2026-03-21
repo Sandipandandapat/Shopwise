@@ -5,28 +5,27 @@ import com.shopwise.dto.InventoryRequestDto;
 import com.shopwise.dto.InventoryResponseDto;
 import com.shopwise.model.Inventory;
 import com.shopwise.mapper.InventoryMapper;
+import com.shopwise.model.InventoryReservation;
 import com.shopwise.repository.InventoryRepository;
 import feign.FeignException;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class InventoryServiceImpl implements InventoryService{
 
     private final InventoryMapper mapper;
     private final InventoryRepository inventoryRepo;
     private final ProductServiceClient productServiceClient;
+    private final InventoryReservationService reservationService;
 
-    @Autowired
-    public InventoryServiceImpl(InventoryMapper mapper, InventoryRepository inventoryRepo,
-                                ProductServiceClient productServiceClient){
-        this.mapper=mapper;
-        this.inventoryRepo=inventoryRepo;
-        this.productServiceClient=productServiceClient;
-    }
 
     @Override
     public void addStock(List<InventoryRequestDto> requestList) {
@@ -60,16 +59,39 @@ public class InventoryServiceImpl implements InventoryService{
     @Override
     public boolean isStockAvailable(String productId, int quantity) {
         return inventoryRepo.findByProductId(productId)
-                .map(inventory -> inventory.getOnHand() >= quantity)
+                .map(inventory -> (inventory.getOnHand()-inventory.getReserved()) >= quantity)
                 .orElse(false);
     }
 
     @Transactional
     @Override
-    public void decreaseStock(String productId, int quantity) {
-        Inventory inventory = inventoryRepo.findByProductId(productId).get();
-        inventory.setOnHand(inventory.getOnHand()-quantity);
-        inventoryRepo.save(inventory);
+    public void deductStockForOrder(Long orderId) {
+        List<InventoryReservation> reservations = reservationService.getReservedItems(orderId);
+
+        for (InventoryReservation reservation:reservations){
+            Inventory inventory = inventoryRepo.findByProductId(reservation.getProductId())
+                    .orElseThrow(() -> new RuntimeException("Inventory not found for product: "+reservation.getProductId()));
+            inventory.setOnHand(inventory.getOnHand()-reservation.getQuantity());
+            inventory.setReserved(inventory.getReserved()-reservation.getQuantity());
+            inventoryRepo.save(inventory);
+            log.info("Deducted stock for product id: {}, now on-hand: {}",reservation.getProductId(),inventory.getOnHand());
+        }
+        reservationService.markFulfilled(orderId);
+    }
+
+    @Transactional
+    @Override
+    public void releaseStockForOrder(Long orderId) {
+        List<InventoryReservation> reservations = reservationService.getReservedItems(orderId);
+
+        for (InventoryReservation reservation:reservations){
+            Inventory inventory = inventoryRepo.findByProductId(reservation.getProductId())
+                    .orElseThrow(() -> new RuntimeException("Inventory not found for product: "+reservation.getProductId()));
+            inventory.setReserved(inventory.getReserved()-reservation.getQuantity());
+            inventoryRepo.save(inventory);
+            log.info("Released reserved for product id: {}",reservation.getProductId());
+        }
+        reservationService.markReleased(orderId);
     }
 
 }

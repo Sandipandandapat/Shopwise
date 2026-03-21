@@ -5,11 +5,13 @@ import com.shopwise.events.OrderItemEvent;
 import com.shopwise.kafka.InventoryOutcomePublisher;
 import com.shopwise.model.Inventory;
 import com.shopwise.model.InventoryReservation;
+import com.shopwise.model.ReservationStatus;
 import com.shopwise.repository.InventoryRepository;
 import com.shopwise.repository.InventoryReservationRepository;
 import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,6 +19,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class InventoryReservationService {
 
     private final InventoryRepository inventoryRepository;
@@ -34,7 +37,7 @@ public class InventoryReservationService {
             var existing  = reservationRepository.findByOrderIdAndProductId(event.getOrderId(),productId)
                     .orElse(null);
 
-            if(existing != null && "RESERVED".equals(existing.getStatus())){
+            if(existing != null && ReservationStatus.RESERVED.equals(existing.getStatus())){
                 continue;
             }
 
@@ -47,15 +50,15 @@ public class InventoryReservationService {
 
             int updated = inventoryRepository.tryReserve(productId,quantity);
             if(updated == 1){
-                saveReservation(event.getOrderId(), productId, quantity, "RESERVED");
+                saveReservation(event.getOrderId(), productId, quantity, ReservationStatus.RESERVED);
             } else {
                 allReserved = false;
-                saveReservation(event.getOrderId(), productId, quantity, "REJECTED");
+                saveReservation(event.getOrderId(), productId, quantity, ReservationStatus.REJECTED);
             }
         }
 
         if (allReserved) {
-            outcomePublisher.publishReserved(event.getOrderId(), correlationId);
+            outcomePublisher.publishReserved(event.getOrderId(), event.getUserId(), event.getTotalAmount(), correlationId);
         } else {
             releasePartialReservations(event.getOrderId(), event.getItems());
             outcomePublisher.publishRejected(event.getOrderId(),
@@ -63,7 +66,7 @@ public class InventoryReservationService {
         }
     }
 
-    private void saveReservation(Long orderId, String productId, int quantity, String status){
+    private void saveReservation(Long orderId, String productId, int quantity, ReservationStatus status){
         var res = reservationRepository.findByOrderIdAndProductId(orderId,productId)
                 .orElseGet(() -> InventoryReservation.builder()
                         .orderId(orderId)
@@ -78,15 +81,40 @@ public class InventoryReservationService {
     private void releasePartialReservations(Long orderId, List<OrderItemEvent> items){
         for(OrderItemEvent item: items) {
             reservationRepository.findByOrderIdAndProductId(orderId, item.getProductId())
-                    .filter( r -> "RESERVED".equals(r.getStatus()))
+                    .filter( r -> ReservationStatus.RESERVED.equals(r.getStatus()))
                     .ifPresent(r -> {
                         inventoryRepository.releaseReservation(r.getProductId(),
                                 r.getQuantity());
-                        r.setStatus("RELEASED");
+                        r.setStatus(ReservationStatus.RELEASED);
                         reservationRepository.save(r);
                     });
         }
     }
 
+    public List<InventoryReservation> getReservedItems(Long orderId) {
+        return reservationRepository
+                .findByOrderIdAndStatus(orderId, ReservationStatus.RESERVED);
+    }
 
+    @Transactional
+    public void markFulfilled(Long orderId) {
+        List<InventoryReservation> reservations = getReservedItems(orderId);
+        reservations.forEach(r -> {
+            r.setStatus(ReservationStatus.FULFILLED);
+            r.setUpdatedAt(LocalDateTime.now());
+        });
+        reservationRepository.saveAll(reservations);
+        log.info("Marked reservations as FULFILLED for orderId: {}", orderId);
+    }
+
+    @Transactional
+    public void markReleased(Long orderId) {
+        List<InventoryReservation> reservations = getReservedItems(orderId);
+        reservations.forEach(r -> {
+            r.setStatus(ReservationStatus.RELEASED);
+            r.setUpdatedAt(LocalDateTime.now());
+        });
+        reservationRepository.saveAll(reservations);
+        log.info("Marked reservations as RELEASED for orderId: {}", orderId);
+    }
 }

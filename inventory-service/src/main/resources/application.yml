@@ -27,16 +27,18 @@ spring:
         spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
         spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
         spring.json.trusted.packages: "*"
-        spring.json.use.type.headers: false
-        spring:
-          json:
-            value:
-              default:
-                type: com.shopwise.events.OrderEvent
-
+        spring.json.use.type.headers: true
+        spring.json.type.mapping: >
+          orderEvent:com.shopwise.events.OrderEvent,
+          paymentEvent:com.shopwise.events.PaymentEvent
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: true
+        spring.json.type.mapping: >
+          inventoryReservedEvent:com.shopwise.events.InventoryReservedEvent,
+          inventoryRejectedEvent:com.shopwise.events.InventoryRejectedEvent
 
 order:
   topic:
@@ -45,3 +47,5 @@ order:
 topic:
     inventory-reserved: inventory-reserved
     inventory-rejected: inventory-rejected
+    payment-success: payment-success
+    payment-failed: payment-failed

@@ -30,6 +30,8 @@ public class InventoryReservation {
     private String productId;
     private int quantity;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private ReservationStatus status;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }
