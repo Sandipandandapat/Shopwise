@@ -22,6 +22,7 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long orderId;
     private Long userId;
+    private String transactionId;
     private BigDecimal totalAmount;
     @Enumerated(EnumType.STRING)
     private OrderStatus status;

@@ -15,7 +15,7 @@ public class InventoryOutcomeConsumer {
 
     @KafkaListener(topics = "${topic.inventory-reserved}", groupId = "${spring.kafka.consumer.group-id}")
     public void onInventoryReserved(InventoryReservedEvent event){
-        orderStatusService.markConfirmed(event.getOrderId());
+        orderStatusService.markPendingForPayment(event);
     }
     @KafkaListener(topics = "${topic.inventory-rejected}", groupId = "${spring.kafka.consumer.group-id}")
     public void onInventoryRejected(InventoryRejectedEvent event){
